@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TManhios Key Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title-glow">TMANHIOS KEY GENERATOR</h1>
+        <p class="subtitle">Format: TManhios-12hour-XXXXXXXXXX</p>
+
+        <div class="tabs">
+            <button id="tab-gen" class="tab-btn active">GET KEY</button>
+            <button id="tab-admin" class="tab-btn">KIỂM TRA KEY</button>
+        </div>
+
+        <div id="view-gen" class="view">
+            <div class="controls">
+                <label>Loại hạn:</label>
+                <select id="duration" disabled>
+                    <option value="12hour" selected>12 Giờ</option>
+                </select>
+
+                <button id="btn-get">GET KEY</button>
+                <button id="btn-copy">COPY</button>
+                <button id="btn-clear">XÓA</button>
+            </div>
+
+            <div class="output">
+                <textarea id="result" readonly placeholder="Key sẽ hiện ở đây sau khi bạn vượt link..."></textarea>
+            </div>
+
+            <div class="counter">
+                <span id="count">0</span> key đã lấy trong phiên |
+                <span id="ip-display">IP: đang lấy...</span>
+            </div>
+        </div>
+
+        <div id="view-admin" class="view" style="display:none">
+            <div class="controls">
+                <input type="text" id="check-key" placeholder="Nhập key cần kiểm tra...">
+                <button id="btn-check">KIỂM TRA</button>
+            </div>
+
+            <div class="check-result" id="check-result">
+                <p>Chưa có kết quả.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="getkey.js"></script>
+</body>
+</html>

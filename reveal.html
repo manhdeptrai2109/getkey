@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Của Bạn</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .reveal-box {
+            background: #0a0a0a;
+            border: 2px solid #ff2b2b;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 50px auto;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(255,43,43,0.4);
+        }
+        .reveal-box h1 {
+            color: #ff2b2b;
+            margin-bottom: 20px;
+            font-size: 28px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #ff2b2b;
+        }
+        .key-display {
+            background: #141414;
+            color: #00ff7f;
+            font-size: 22px;
+            font-weight: bold;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            word-break: break-all;
+            border: 1px solid #333;
+            letter-spacing: 2px;
+        }
+        .copy-btn {
+            background: #1e6f1e;
+            color: #fff;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+        .copy-btn:hover {
+            background: #2a8f2a;
+            box-shadow: 0 0 15px rgba(30,111,30,0.7);
+        }
+        .note {
+            color: #888;
+            font-size: 13px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="reveal-box">
+            <h1>KEY CỦA BẠN</h1>
+            <p style="color:#aaa">Copy key bên dưới và nhập vào app</p>
+
+            <div class="key-display" id="key">Đang tải...</div>
+
+            <button class="copy-btn" id="btn-copy">COPY KEY</button>
+
+            <p class="note">Key có hiệu lực 12 giờ kể từ lần sử dụng đầu tiên.</p>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(location.search);
+        const key = params.get("key") || "Không có key";
+
+        document.getElementById("key").textContent = key;
+
+        document.getElementById("btn-copy").addEventListener("click", () => {
+            navigator.clipboard.writeText(key).then(() => {
+                const btn = document.getElementById("btn-copy");
+                const old = btn.textContent;
+                btn.textContent = "ĐÃ COPY";
+                setTimeout(() => { btn.textContent = old; }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>
