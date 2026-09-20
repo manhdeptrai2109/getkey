@@ -161,6 +161,12 @@ body {
     align-items: center;
 }
 
+.controls.paste-row {
+    margin-top: 15px;
+    border-top: 1px dashed #333;
+    padding-top: 15px;
+}
+
 .controls label {
     color: #aaa;
     font-size: 14px;
@@ -236,13 +242,17 @@ body {
     font-size: 14px;
 }
 
+.controls button#btn-paste {
+    background: #1e4f6f;
+}
+
 .controls button#btn-check {
     background: #1e4f6f;
 }
 
 .output textarea {
     width: 100%;
-    height: 300px;
+    height: 250px;
     background: #0a0a0a;
     border: 1px solid #333;
     color: #00ff7f;
