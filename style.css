@@ -16,26 +16,32 @@ body {
     padding: 20px;
 }
 
-/* Chú thích: khung chính */
+/* ============================================================
+   Chú thích: KHUNG CHÍNH
+   ============================================================ */
 .container {
     position: relative;
     background: #141414;
     border-radius: 8px;
     padding: 30px;
     width: 100%;
-    max-width: 1100px;
+    max-width: 1400px;
     z-index: 1;
     box-shadow:
         0 0 20px rgba(255, 43, 43, 0.3),
         inset 0 0 20px rgba(255, 43, 43, 0.05);
 }
 
+/* Chú thích: biến góc cho conic-gradient */
 @property --angle {
     syntax: "<angle>";
     initial-value: 0deg;
     inherits: false;
 }
 
+/* ============================================================
+   Chú thích: TIA SÁNG VIỀN 1
+   ============================================================ */
 .container::before {
     content: "";
     position: absolute;
@@ -60,6 +66,9 @@ body {
     z-index: -1;
 }
 
+/* ============================================================
+   Chú thích: TIA SÁNG VIỀN 2 lệch pha
+   ============================================================ */
 .container::after {
     content: "";
     position: absolute;
@@ -90,6 +99,9 @@ body {
     to   { --angle: 360deg; }
 }
 
+/* ============================================================
+   Chú thích: TIÊU ĐỀ GLOW + FLOAT
+   ============================================================ */
 .title-glow {
     color: #ff2b2b;
     font-size: 24px;
@@ -125,6 +137,9 @@ body {
     margin-bottom: 20px;
 }
 
+/* ============================================================
+   Chú thích: THANH TAB
+   ============================================================ */
 .tabs {
     display: flex;
     gap: 5px;
@@ -155,6 +170,9 @@ body {
     text-shadow: 0 0 8px rgba(255, 43, 43, 0.6);
 }
 
+/* ============================================================
+   Chú thích: KHU ĐIỀU KHIỂN
+   ============================================================ */
 .controls {
     display: flex;
     flex-wrap: wrap;
@@ -168,7 +186,9 @@ body {
     font-size: 14px;
 }
 
+.controls input[type="number"],
 .controls input[type="text"],
+.controls input[type="password"],
 .controls select {
     padding: 8px;
     background: #1e1e1e;
@@ -179,14 +199,19 @@ body {
     font-family: 'Courier New', monospace;
 }
 
-.controls input[type="text"] {
+.controls input[type="number"] {
+    width: 100px;
+}
+
+.controls input[type="text"],
+.controls input[type="password"] {
     flex: 1;
-    min-width: 200px;
+    min-width: 150px;
 }
 
 .controls select {
     cursor: pointer;
-    min-width: 150px;
+    min-width: 120px;
 }
 
 .controls select:focus,
@@ -194,11 +219,6 @@ body {
     outline: none;
     border-color: #ff2b2b;
     box-shadow: 0 0 8px rgba(255, 43, 43, 0.5);
-}
-
-.controls select:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
 }
 
 .controls button {
@@ -212,6 +232,7 @@ body {
     font-size: 13px;
     letter-spacing: 1px;
     transition: 0.2s;
+    white-space: nowrap;
 }
 
 .controls button:hover {
@@ -219,12 +240,8 @@ body {
     box-shadow: 0 0 12px rgba(255, 43, 43, 0.6);
 }
 
-.controls button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.controls button#btn-clear {
+.controls button#btn-clear,
+.controls button#btn-clear-all {
     background: #333;
 }
 
@@ -232,16 +249,21 @@ body {
     background: #1e6f1e;
 }
 
-.controls button#btn-get {
-    background: #ff2b2b;
-    padding: 10px 24px;
-    font-size: 14px;
-}
-
-.controls button#btn-check {
+.controls button#btn-reload {
     background: #1e4f6f;
 }
 
+.controls button#btn-create-seller {
+    background: #1e6f1e;
+}
+
+.controls button#btn-load-sellers {
+    background: #1e4f6f;
+}
+
+/* ============================================================
+   Chú thích: TEXTAREA OUTPUT
+   ============================================================ */
 .output textarea {
     width: 100%;
     height: 300px;
@@ -255,6 +277,9 @@ body {
     line-height: 1.5;
 }
 
+/* ============================================================
+   Chú thích: BỘ ĐẾM
+   ============================================================ */
 .counter {
     text-align: right;
     color: #666;
@@ -267,26 +292,149 @@ body {
     font-weight: bold;
 }
 
-.check-result {
-    background: #0a0a0a;
+/* ============================================================
+   Chú thích: BẢNG ADMIN
+   ============================================================ */
+.table-wrap {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: auto;
     border: 1px solid #333;
     border-radius: 4px;
-    padding: 20px;
-    color: #ccc;
-    min-height: 100px;
-    line-height: 1.8;
+    background: #0a0a0a;
 }
 
-.check-result .ok {
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    min-width: 1100px;
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    background: #1e1e1e;
+    z-index: 2;
+}
+
+th, td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid #222;
+    vertical-align: middle;
+}
+
+th {
+    color: #ff2b2b;
+    font-weight: bold;
+    letter-spacing: 1px;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+td {
+    color: #ccc;
+}
+
+td.key-cell {
+    color: #00ff7f;
+    font-weight: bold;
+    word-break: break-all;
+    max-width: 200px;
+}
+
+td.type-cell {
+    color: #ff8888;
+}
+
+td.expired {
+    color: #ff2b2b;
+}
+
+td.active {
+    color: #00ff7f;
+}
+
+td.permanent {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+td.not-used {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+/* Chú thích: seller status */
+td.seller-active {
     color: #00ff7f;
     font-weight: bold;
 }
 
-.check-result .err {
+td.seller-disabled {
     color: #ff2b2b;
     font-weight: bold;
 }
 
+/* ============================================================
+   Chú thích: NÚT TRONG BẢNG
+   ============================================================ */
+.btn-del,
+.btn-toggle,
+.btn-keys,
+.btn-renew {
+    color: #fff;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 10px;
+    margin: 2px;
+    font-weight: bold;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.btn-del {
+    background: #ff2b2b;
+}
+
+.btn-del:hover {
+    background: #cc1f1f;
+    box-shadow: 0 0 8px rgba(255, 43, 43, 0.7);
+}
+
+.btn-toggle {
+    background: #1e4f6f;
+}
+
+.btn-toggle:hover {
+    background: #2a5f8f;
+    box-shadow: 0 0 8px rgba(30, 79, 111, 0.7);
+}
+
+.btn-keys {
+    background: #1e6f1e;
+}
+
+.btn-keys:hover {
+    background: #2a8f2a;
+    box-shadow: 0 0 8px rgba(30, 111, 30, 0.7);
+}
+
+.btn-renew {
+    background: #8f6f1e;
+}
+
+.btn-renew:hover {
+    background: #af8f2e;
+    box-shadow: 0 0 8px rgba(143, 111, 30, 0.7);
+}
+
+/* ============================================================
+   Chú thích: CHẤM ĐỎ KHI CLICK
+   ============================================================ */
 .click-dot {
     position: fixed;
     width: 14px;
@@ -308,6 +456,11 @@ body {
     0% {
         opacity: 1;
         transform: translate(-50%, -50%) scale(0.6);
+        box-shadow:
+            0 0 6px #ff2b2b,
+            0 0 12px #ff2b2b,
+            0 0 24px #ff2b2b,
+            0 0 40px rgba(255, 43, 43, 0.7);
     }
     15% {
         opacity: 1;
