@@ -1,13 +1,13 @@
-// Chú thích: getkey.js - gọi Worker getkeyserver /getkey + tmanhios /check
+// Chú thích: getkey.js - gọi Worker /getkey + /check
 
-const API_GETKEY = "https://getkeyserver.pretty-pilot.workers.dev/getkey";
+const API_GETKEY = "https://tmanhios.pretty-pilot.workers.dev/getkey";
 const API_CHECK  = "https://tmanhios.pretty-pilot.workers.dev/check";
 
 let currentIP = "unknown";
 let totalCount = 0;
 
 // ============================================================
-// Chú thích: HWID trình duyệt
+// Chú thích: LẤY HWID DUY NHẤT CHO TRÌNH DUYỆT
 // ============================================================
 function getHWID() {
     let hwid = localStorage.getItem("tmanhios_hwid");
@@ -21,7 +21,7 @@ function getHWID() {
 }
 
 // ============================================================
-// Chú thích: lấy IP
+// Chú thích: LẤY IPV4
 // ============================================================
 async function fetchIP() {
     try {
@@ -36,7 +36,7 @@ async function fetchIP() {
 }
 
 // ============================================================
-// Chú thích: DOM
+// Chú thích: DOM ELEMENT
 // ============================================================
 const $tabGen    = document.getElementById("tab-gen");
 const $tabAdmin  = document.getElementById("tab-admin");
@@ -54,7 +54,7 @@ const $btnCheck    = document.getElementById("btn-check");
 const $checkResult = document.getElementById("check-result");
 
 // ============================================================
-// Chú thích: chuyển tab
+// Chú thích: CHUYỂN TAB
 // ============================================================
 $tabGen.addEventListener("click", () => {
     $tabGen.classList.add("active");
@@ -71,17 +71,13 @@ $tabAdmin.addEventListener("click", () => {
 });
 
 // ============================================================
-// Chú thích: NÚT GET KEY - mở tab trước await + rút gọn 2 lớp
+// Chú thích: NÚT GET KEY - gọi Worker lấy link
 // ============================================================
 $btnGet.addEventListener("click", async () => {
     const hwid = getHWID();
     const oldText = $btnGet.textContent;
     $btnGet.textContent = "ĐANG LẤY...";
     $btnGet.disabled = true;
-
-    // Chú thích: mở tab trống NGAY trong click → mobile không chặn popup
-    let newTab = null;
-    try { newTab = window.open("about:blank", "_blank"); } catch (e) { newTab = null; }
 
     try {
         const form = new FormData();
@@ -91,14 +87,10 @@ $btnGet.addEventListener("click", async () => {
         const j = await r.json();
 
         if (j.status === "success") {
-            // Chú thích: gán URL vào tab đã mở (link cuối = vuotnhanh)
-            if (newTab && !newTab.closed) {
-                newTab.location.href = j.link;
-            } else {
-                location.href = j.link;
-            }
+            // Chú thích: mở link trong tab mới
+            window.open(j.link, "_blank");
 
-            // Chú thích: cộng dồn key vào textarea
+            // Chú thích: lưu key vào textarea khi user quay lại
             const oldResult = $result.value;
             if (oldResult.trim() === "") {
                 $result.value = j.key;
@@ -109,19 +101,20 @@ $btnGet.addEventListener("click", async () => {
             totalCount++;
             $count.textContent = totalCount;
 
-            $btnGet.textContent = j.cached ? "KEY CŨ (CÒN HẠN)" : "ĐÃ LẤY";
+            if (j.cached) {
+                $btnGet.textContent = "KEY CŨ (CÒN HẠN)";
+            } else {
+                $btnGet.textContent = "ĐÃ LẤY";
+            }
             setTimeout(() => { $btnGet.textContent = oldText; }, 2000);
         } else if (j.msg === "rate_limit") {
-            if (newTab && !newTab.closed) newTab.close();
             alert("Bạn đã lấy key. Thử lại sau " + Math.floor(j.remain / 60) + " phút.");
             $btnGet.textContent = oldText;
         } else {
-            if (newTab && !newTab.closed) newTab.close();
             alert("Lỗi: " + (j.msg || "không xác định"));
             $btnGet.textContent = oldText;
         }
     } catch (e) {
-        if (newTab && !newTab.closed) newTab.close();
         alert("Không kết nối được server. Kiểm tra mạng.");
         $btnGet.textContent = oldText;
     } finally {
@@ -151,7 +144,7 @@ $btnClear.addEventListener("click", () => {
 });
 
 // ============================================================
-// Chú thích: KIỂM TRA KEY
+// Chú thích: NÚT KIỂM TRA KEY
 // ============================================================
 $btnCheck.addEventListener("click", async () => {
     const key = $checkKey.value.trim();
@@ -161,8 +154,7 @@ $btnCheck.addEventListener("click", async () => {
         return;
     }
 
-    // Chú thích: regex chấp nhận 6hour
-    const regex = /^TManhios\-(6hour|12hour|1hour|1day|7day|1month|forever)\-[A-Z0-9]{4,64}$/;
+    const regex = /^TManhios\-(1hour|1day|7day|1month|forever)\-[A-Z0-9]{4,64}$/;
     if (!regex.test(key)) {
         $checkResult.innerHTML = '<p class="err">✗ Sai định dạng key</p>';
         return;
@@ -180,10 +172,15 @@ $btnCheck.addEventListener("click", async () => {
 
         if (j.status === "success") {
             let stateHtml = "";
-            if (j.msg === "activated") stateHtml = '<span class="ok">Vừa kích hoạt lần đầu</span>';
-            else if (j.msg === "valid") stateHtml = '<span class="ok">Đang hoạt động</span>';
-            else if (j.msg === "alive") stateHtml = '<span class="ok">Key đang sống</span>';
-            else stateHtml = '<span class="ok">' + j.msg + '</span>';
+            if (j.msg === "activated") {
+                stateHtml = '<span class="ok">Vừa kích hoạt lần đầu</span>';
+            } else if (j.msg === "valid") {
+                stateHtml = '<span class="ok">Đang hoạt động</span>';
+            } else if (j.msg === "alive") {
+                stateHtml = '<span class="ok">Key đang sống</span>';
+            } else {
+                stateHtml = '<span class="ok">' + j.msg + '</span>';
+            }
 
             let remainHtml = "";
             if (j.remain) remainHtml = "<p>Còn lại: " + formatRemain(j.remain) + "</p>";
@@ -208,21 +205,23 @@ $btnCheck.addEventListener("click", async () => {
 });
 
 // ============================================================
-// Chú thích: format thời gian còn lại
+// Chú thích: FORMAT THỜI GIAN
 // ============================================================
 function formatRemain(ms) {
     if (ms <= 0) return "HẾT HẠN";
     const totalSec = Math.floor(ms / 1000);
-    const h = Math.floor(totalSec / 3600);
+    const d = Math.floor(totalSec / 86400);
+    const h = Math.floor((totalSec % 86400) / 3600);
     const m = Math.floor((totalSec % 3600) / 60);
     const s = totalSec % 60;
+    if (d > 0) return d + "N " + h + "H " + m + "M";
     return String(h).padStart(2, "0") + ":" +
            String(m).padStart(2, "0") + ":" +
            String(s).padStart(2, "0");
 }
 
 // ============================================================
-// Chú thích: chấm đỏ khi click
+// Chú thích: HIỆU ỨNG CHẤM ĐỎ
 // ============================================================
 document.addEventListener("click", (e) => {
     const dot = document.createElement("div");
@@ -233,4 +232,7 @@ document.addEventListener("click", (e) => {
     setTimeout(() => dot.remove(), 3000);
 });
 
+// ============================================================
+// Chú thích: KHỞI ĐỘNG
+// ============================================================
 fetchIP();
