@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- Chú thích: web getkey - giao diện giống web admin -->
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -10,21 +9,21 @@
 <body>
     <div class="container">
         <h1 class="title-glow">TMANHIOS KEY GENERATOR</h1>
-        <p class="subtitle">Format: TManhios-[1hour|1day|7day|1month|forever]-XXXXXXXXXX</p>
+        <p class="subtitle">Format: TManhios-6hour-XXXXXXXXXX</p>
 
         <div class="tabs">
             <button id="tab-gen" class="tab-btn active">GET KEY</button>
-            <button id="tab-admin" class="tab-btn">KIỂM TRA KEY</button>
+            <button id="tab-check" class="tab-btn">KIỂM TRA KEY</button>
         </div>
 
         <!-- ============================================================
-             Chú thích: VIEW GET KEY
+             VIEW GET KEY
              ============================================================ -->
         <div id="view-gen" class="view">
             <div class="controls">
                 <label>Loại hạn:</label>
                 <select id="duration" disabled>
-                    <option value="1day" selected>1 Ngày (mặc định)</option>
+                    <option value="6hour" selected>6 Giờ</option>
                 </select>
 
                 <button id="btn-get">GET KEY</button>
@@ -33,7 +32,7 @@
             </div>
 
             <div class="output">
-                <textarea id="result" readonly placeholder="Key sẽ hiện ở đây sau khi bạn vượt link..."></textarea>
+                <textarea id="result" readonly placeholder="Nhấn GET KEY để mở link vượt. Sau khi vượt xong, key sẽ hiện ở trang reveal."></textarea>
             </div>
 
             <div class="counter">
@@ -43,9 +42,9 @@
         </div>
 
         <!-- ============================================================
-             Chú thích: VIEW KIỂM TRA KEY
+             VIEW KIỂM TRA KEY
              ============================================================ -->
-        <div id="view-admin" class="view" style="display:none">
+        <div id="view-check" class="view" style="display:none">
             <div class="controls">
                 <input type="text" id="check-key" placeholder="Nhập key cần kiểm tra...">
                 <button id="btn-check">KIỂM TRA</button>
