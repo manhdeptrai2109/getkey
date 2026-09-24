@@ -6,9 +6,7 @@ const API_CHECK  = "https://tmanhios.pretty-pilot.workers.dev/check";
 let currentIP = "unknown";
 let totalCount = 0;
 
-// ============================================================
-// Chú thích: LẤY HWID DUY NHẤT CHO TRÌNH DUYỆT
-// ============================================================
+// Chú thích: HWID duy nhất cho trình duyệt
 function getHWID() {
     let hwid = localStorage.getItem("tmanhios_hwid");
     if (!hwid) {
@@ -20,28 +18,23 @@ function getHWID() {
     return hwid;
 }
 
-// ============================================================
-// Chú thích: LẤY IPV4
-// ============================================================
 async function fetchIP() {
     try {
         const r = await fetch("https://api.ipify.org?format=json");
         const j = await r.json();
         currentIP = j.ip || "unknown";
-    } catch (e) {
-        currentIP = "unknown";
-    }
+    } catch (e) { currentIP = "unknown"; }
     const el = document.getElementById("ip-display");
     if (el) el.textContent = "IP: " + currentIP;
 }
 
 // ============================================================
-// Chú thích: DOM ELEMENT
+// Chú thích: DOM
 // ============================================================
 const $tabGen    = document.getElementById("tab-gen");
-const $tabAdmin  = document.getElementById("tab-admin");
+const $tabCheck  = document.getElementById("tab-check");
 const $viewGen   = document.getElementById("view-gen");
-const $viewAdmin = document.getElementById("view-admin");
+const $viewCheck = document.getElementById("view-check");
 
 const $btnGet    = document.getElementById("btn-get");
 const $btnCopy   = document.getElementById("btn-copy");
@@ -58,26 +51,29 @@ const $checkResult = document.getElementById("check-result");
 // ============================================================
 $tabGen.addEventListener("click", () => {
     $tabGen.classList.add("active");
-    $tabAdmin.classList.remove("active");
+    $tabCheck.classList.remove("active");
     $viewGen.style.display = "";
-    $viewAdmin.style.display = "none";
+    $viewCheck.style.display = "none";
 });
 
-$tabAdmin.addEventListener("click", () => {
-    $tabAdmin.classList.add("active");
+$tabCheck.addEventListener("click", () => {
+    $tabCheck.classList.add("active");
     $tabGen.classList.remove("active");
     $viewGen.style.display = "none";
-    $viewAdmin.style.display = "";
+    $viewCheck.style.display = "";
 });
 
 // ============================================================
-// Chú thích: NÚT GET KEY - gọi Worker lấy link
+// Chú thích: NÚT GET KEY - mở link vượt, KHÔNG hiện key
 // ============================================================
 $btnGet.addEventListener("click", async () => {
     const hwid = getHWID();
     const oldText = $btnGet.textContent;
     $btnGet.textContent = "ĐANG LẤY...";
     $btnGet.disabled = true;
+
+    let newTab = null;
+    try { newTab = window.open("about:blank", "_blank"); } catch (e) { newTab = null; }
 
     try {
         const form = new FormData();
@@ -87,16 +83,13 @@ $btnGet.addEventListener("click", async () => {
         const j = await r.json();
 
         if (j.status === "success") {
-            // Chú thích: mở link trong tab mới
-            window.open(j.link, "_blank");
-
-            // Chú thích: lưu key vào textarea khi user quay lại
-            const oldResult = $result.value;
-            if (oldResult.trim() === "") {
-                $result.value = j.key;
+            if (newTab && !newTab.closed) {
+                newTab.location.href = j.link;
             } else {
-                $result.value = oldResult + "\n" + j.key;
+                location.href = j.link;
             }
+
+            $result.value = "Đã mở link vượt. Vui lòng vượt link để nhận key.\nSau khi vượt xong, key sẽ hiện ở trang reveal.";
 
             totalCount++;
             $count.textContent = totalCount;
@@ -107,14 +100,13 @@ $btnGet.addEventListener("click", async () => {
                 $btnGet.textContent = "ĐÃ LẤY";
             }
             setTimeout(() => { $btnGet.textContent = oldText; }, 2000);
-        } else if (j.msg === "rate_limit") {
-            alert("Bạn đã lấy key. Thử lại sau " + Math.floor(j.remain / 60) + " phút.");
-            $btnGet.textContent = oldText;
         } else {
+            if (newTab && !newTab.closed) newTab.close();
             alert("Lỗi: " + (j.msg || "không xác định"));
             $btnGet.textContent = oldText;
         }
     } catch (e) {
+        if (newTab && !newTab.closed) newTab.close();
         alert("Không kết nối được server. Kiểm tra mạng.");
         $btnGet.textContent = oldText;
     } finally {
@@ -122,9 +114,6 @@ $btnGet.addEventListener("click", async () => {
     }
 });
 
-// ============================================================
-// Chú thích: NÚT COPY
-// ============================================================
 $btnCopy.addEventListener("click", () => {
     if (!$result.value) return;
     navigator.clipboard.writeText($result.value).then(() => {
@@ -134,9 +123,6 @@ $btnCopy.addEventListener("click", () => {
     });
 });
 
-// ============================================================
-// Chú thích: NÚT XÓA
-// ============================================================
 $btnClear.addEventListener("click", () => {
     $result.value = "";
     totalCount = 0;
@@ -154,7 +140,7 @@ $btnCheck.addEventListener("click", async () => {
         return;
     }
 
-    const regex = /^TManhios\-(1hour|1day|7day|1month|forever)\-[A-Z0-9]{4,64}$/;
+    const regex = /^TManhios\-(6hour|12hour|1hour|1day|7day|1month|forever)\-[A-Z0-9]{4,64}$/;
     if (!regex.test(key)) {
         $checkResult.innerHTML = '<p class="err">✗ Sai định dạng key</p>';
         return;
@@ -172,15 +158,10 @@ $btnCheck.addEventListener("click", async () => {
 
         if (j.status === "success") {
             let stateHtml = "";
-            if (j.msg === "activated") {
-                stateHtml = '<span class="ok">Vừa kích hoạt lần đầu</span>';
-            } else if (j.msg === "valid") {
-                stateHtml = '<span class="ok">Đang hoạt động</span>';
-            } else if (j.msg === "alive") {
-                stateHtml = '<span class="ok">Key đang sống</span>';
-            } else {
-                stateHtml = '<span class="ok">' + j.msg + '</span>';
-            }
+            if (j.msg === "activated") stateHtml = '<span class="ok">Vừa kích hoạt lần đầu</span>';
+            else if (j.msg === "valid") stateHtml = '<span class="ok">Đang hoạt động</span>';
+            else if (j.msg === "alive") stateHtml = '<span class="ok">Key đang sống</span>';
+            else stateHtml = '<span class="ok">' + j.msg + '</span>';
 
             let remainHtml = "";
             if (j.remain) remainHtml = "<p>Còn lại: " + formatRemain(j.remain) + "</p>";
@@ -194,10 +175,13 @@ $btnCheck.addEventListener("click", async () => {
                 "invalid_key": "Key không tồn tại",
                 "hwid_mismatch": "Key đã dùng trên thiết bị khác",
                 "expired": "Key đã hết hạn",
-                "missing_param": "Thiếu tham số"
+                "missing_param": "Thiếu tham số",
+                "seller_deleted": "Seller đã bị xóa",
+                "seller_disabled": "Seller đã bị khóa",
+                "seller_expired": "Seller đã hết hạn thuê"
             };
             const msg = msgMap[j.msg] || j.msg || "Lỗi không xác định";
-            $checkResult.innerHTML = '<p class="err">✗ ' + msg + "</p>";
+            $checkResult.innerHTML = '<p class="err">✗ ' + msg + '</p>';
         }
     } catch (e) {
         $checkResult.innerHTML = '<p class="err">Không kết nối được server.</p>';
@@ -221,7 +205,7 @@ function formatRemain(ms) {
 }
 
 // ============================================================
-// Chú thích: HIỆU ỨNG CHẤM ĐỎ
+// Chú thích: CHẤM ĐỎ KHI CLICK
 // ============================================================
 document.addEventListener("click", (e) => {
     const dot = document.createElement("div");
@@ -232,7 +216,4 @@ document.addEventListener("click", (e) => {
     setTimeout(() => dot.remove(), 3000);
 });
 
-// ============================================================
-// Chú thích: KHỞI ĐỘNG
-// ============================================================
 fetchIP();
