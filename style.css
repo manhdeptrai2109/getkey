@@ -1,3 +1,4 @@
+/* Chú thích: reset toàn cục */
 * {
     margin: 0;
     padding: 0;
@@ -15,6 +16,7 @@ body {
     padding: 20px;
 }
 
+/* Chú thích: khung chính */
 .container {
     position: relative;
     background: #141414;
@@ -28,12 +30,14 @@ body {
         inset 0 0 20px rgba(255, 43, 43, 0.05);
 }
 
+/* Chú thích: biến góc */
 @property --angle {
     syntax: "<angle>";
     initial-value: 0deg;
     inherits: false;
 }
 
+/* Chú thích: tia sáng viền 1 */
 .container::before {
     content: "";
     position: absolute;
@@ -58,6 +62,7 @@ body {
     z-index: -1;
 }
 
+/* Chú thích: tia sáng viền 2 lệch pha */
 .container::after {
     content: "";
     position: absolute;
@@ -88,6 +93,7 @@ body {
     to   { --angle: 360deg; }
 }
 
+/* Chú thích: tiêu đề glow + float */
 .title-glow {
     color: #ff2b2b;
     font-size: 24px;
@@ -123,6 +129,7 @@ body {
     margin-bottom: 20px;
 }
 
+/* Chú thích: thanh tab */
 .tabs {
     display: flex;
     gap: 5px;
@@ -153,6 +160,7 @@ body {
     text-shadow: 0 0 8px rgba(255, 43, 43, 0.6);
 }
 
+/* Chú thích: khu điều khiển */
 .controls {
     display: flex;
     flex-wrap: wrap;
@@ -161,17 +169,12 @@ body {
     align-items: center;
 }
 
-.controls.paste-row {
-    margin-top: 15px;
-    border-top: 1px dashed #333;
-    padding-top: 15px;
-}
-
 .controls label {
     color: #aaa;
     font-size: 14px;
 }
 
+.controls input[type="number"],
 .controls input[type="text"],
 .controls select {
     padding: 8px;
@@ -190,7 +193,7 @@ body {
 
 .controls select {
     cursor: pointer;
-    min-width: 150px;
+    min-width: 180px;
 }
 
 .controls select:focus,
@@ -242,17 +245,14 @@ body {
     font-size: 14px;
 }
 
-.controls button#btn-paste {
-    background: #1e4f6f;
-}
-
 .controls button#btn-check {
     background: #1e4f6f;
 }
 
+/* Chú thích: textarea output */
 .output textarea {
     width: 100%;
-    height: 250px;
+    height: 300px;
     background: #0a0a0a;
     border: 1px solid #333;
     color: #00ff7f;
@@ -263,6 +263,7 @@ body {
     line-height: 1.5;
 }
 
+/* Chú thích: bộ đếm */
 .counter {
     text-align: right;
     color: #666;
@@ -275,6 +276,7 @@ body {
     font-weight: bold;
 }
 
+/* Chú thích: kết quả kiểm tra key */
 .check-result {
     background: #0a0a0a;
     border: 1px solid #333;
@@ -295,6 +297,12 @@ body {
     font-weight: bold;
 }
 
+.check-result .warn {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+/* Chú thích: chấm đỏ khi click */
 .click-dot {
     position: fixed;
     width: 14px;
