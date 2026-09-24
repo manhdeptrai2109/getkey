@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Chú thích: web getkey - giao diện giống web admin -->
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -9,18 +10,21 @@
 <body>
     <div class="container">
         <h1 class="title-glow">TMANHIOS KEY GENERATOR</h1>
-        <p class="subtitle">Format: TManhios-6hour-XXXXXXXXXX</p>
+        <p class="subtitle">Format: TManhios-[1hour|1day|7day|1month|forever]-XXXXXXXXXX</p>
 
         <div class="tabs">
             <button id="tab-gen" class="tab-btn active">GET KEY</button>
             <button id="tab-admin" class="tab-btn">KIỂM TRA KEY</button>
         </div>
 
+        <!-- ============================================================
+             Chú thích: VIEW GET KEY
+             ============================================================ -->
         <div id="view-gen" class="view">
             <div class="controls">
                 <label>Loại hạn:</label>
                 <select id="duration" disabled>
-                    <option value="6hour" selected>6 Giờ</option>
+                    <option value="1day" selected>1 Ngày (mặc định)</option>
                 </select>
 
                 <button id="btn-get">GET KEY</button>
@@ -38,6 +42,9 @@
             </div>
         </div>
 
+        <!-- ============================================================
+             Chú thích: VIEW KIỂM TRA KEY
+             ============================================================ -->
         <div id="view-admin" class="view" style="display:none">
             <div class="controls">
                 <input type="text" id="check-key" placeholder="Nhập key cần kiểm tra...">
