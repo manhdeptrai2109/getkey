@@ -12,7 +12,7 @@
         <p class="subtitle">Copy key bên dưới và nhập vào app</p>
 
         <div class="check-result" id="key-box">
-            <p style="color:#00ff7f; font-size:20px; font-weight:bold; word-break:break-all;" id="key">Đang tải...</p>
+            <p style="color:#00ff7f; font-size:20px; font-weight:bold; word-break:break-all; text-align:center;" id="key">Đang tải...</p>
         </div>
 
         <div class="controls" style="margin-top:20px; justify-content:center;">
@@ -49,6 +49,7 @@
                 if (j.status === "success") {
                     finalKey = j.key;
                     keyEl.textContent = finalKey;
+                    keyEl.style.color = "#00ff7f";
                     copyBtn.disabled = false;
                 } else {
                     keyEl.textContent = "Token hết hạn hoặc không hợp lệ";
@@ -69,6 +70,16 @@
                 copyBtn.textContent = "ĐÃ COPY";
                 setTimeout(() => { copyBtn.textContent = old; }, 1500);
             });
+        });
+
+        // Chú thích: hiệu ứng chấm đỏ khi click
+        document.addEventListener("click", (e) => {
+            const dot = document.createElement("div");
+            dot.className = "click-dot";
+            dot.style.left = e.clientX + "px";
+            dot.style.top  = e.clientY + "px";
+            document.body.appendChild(dot);
+            setTimeout(() => dot.remove(), 3000);
         });
 
         verifyToken();
