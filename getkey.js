@@ -1,13 +1,13 @@
-// Chú thích: getkey.js - gọi Worker /getkey + /check
+// Chú thích: getkey.js - gọi Worker getkeyserver /getkey + tmanhios /check
 
-const API_GETKEY = "https://tmanhios.pretty-pilot.workers.dev/getkey";
+const API_GETKEY = "https://getkeyserver.pretty-pilot.workers.dev/getkey";
 const API_CHECK  = "https://tmanhios.pretty-pilot.workers.dev/check";
 
 let currentIP = "unknown";
 let totalCount = 0;
 
 // ============================================================
-// Chú thích: lấy HWID trình duyệt
+// Chú thích: HWID trình duyệt
 // ============================================================
 function getHWID() {
     let hwid = localStorage.getItem("tmanhios_hwid");
@@ -49,9 +49,6 @@ const $btnClear  = document.getElementById("btn-clear");
 const $result    = document.getElementById("result");
 const $count     = document.getElementById("count");
 
-const $pasteKey  = document.getElementById("paste-key");
-const $btnPaste  = document.getElementById("btn-paste");
-
 const $checkKey    = document.getElementById("check-key");
 const $btnCheck    = document.getElementById("btn-check");
 const $checkResult = document.getElementById("check-result");
@@ -74,13 +71,17 @@ $tabAdmin.addEventListener("click", () => {
 });
 
 // ============================================================
-// Chú thích: nút GET KEY - chỉ nhận link, không nhận key
+// Chú thích: NÚT GET KEY - mở tab trước await + rút gọn 2 lớp
 // ============================================================
 $btnGet.addEventListener("click", async () => {
     const hwid = getHWID();
     const oldText = $btnGet.textContent;
     $btnGet.textContent = "ĐANG LẤY...";
     $btnGet.disabled = true;
+
+    // Chú thích: mở tab trống NGAY trong click → mobile không chặn popup
+    let newTab = null;
+    try { newTab = window.open("about:blank", "_blank"); } catch (e) { newTab = null; }
 
     try {
         const form = new FormData();
@@ -90,30 +91,37 @@ $btnGet.addEventListener("click", async () => {
         const j = await r.json();
 
         if (j.status === "success") {
-            // Chú thích: mở link rút gọn
-            window.open(j.link, "_blank");
+            // Chú thích: gán URL vào tab đã mở (link cuối = vuotnhanh)
+            if (newTab && !newTab.closed) {
+                newTab.location.href = j.link;
+            } else {
+                location.href = j.link;
+            }
 
-            // Chú thích: KHÔNG hiển thị key
-            // Hướng dẫn user vượt link + dán key
-            $result.value =
-                "=== HƯỚNG DẪN ===\n" +
-                "1. Tab mới vừa mở → vượt link vuotnhanh\n" +
-                "2. Vượt tiếp link link4m\n" +
-                "3. Đến trang reveal → thấy key\n" +
-                "4. Copy key\n" +
-                "5. Quay lại đây → dán vào ô bên dưới → XÁC NHẬN\n" +
-                "\nĐang chờ bạn vượt link...";
+            // Chú thích: cộng dồn key vào textarea
+            const oldResult = $result.value;
+            if (oldResult.trim() === "") {
+                $result.value = j.key;
+            } else {
+                $result.value = oldResult + "\n" + j.key;
+            }
 
-            $btnGet.textContent = j.cached ? "KEY CŨ" : "ĐANG VƯỢT LINK";
-            setTimeout(() => { $btnGet.textContent = oldText; }, 2500);
+            totalCount++;
+            $count.textContent = totalCount;
+
+            $btnGet.textContent = j.cached ? "KEY CŨ (CÒN HẠN)" : "ĐÃ LẤY";
+            setTimeout(() => { $btnGet.textContent = oldText; }, 2000);
         } else if (j.msg === "rate_limit") {
+            if (newTab && !newTab.closed) newTab.close();
             alert("Bạn đã lấy key. Thử lại sau " + Math.floor(j.remain / 60) + " phút.");
             $btnGet.textContent = oldText;
         } else {
+            if (newTab && !newTab.closed) newTab.close();
             alert("Lỗi: " + (j.msg || "không xác định"));
             $btnGet.textContent = oldText;
         }
     } catch (e) {
+        if (newTab && !newTab.closed) newTab.close();
         alert("Không kết nối được server. Kiểm tra mạng.");
         $btnGet.textContent = oldText;
     } finally {
@@ -122,33 +130,7 @@ $btnGet.addEventListener("click", async () => {
 });
 
 // ============================================================
-// Chú thích: nút XÁC NHẬN key sau khi vượt link
-// ============================================================
-$btnPaste.addEventListener("click", () => {
-    const key = $pasteKey.value.trim();
-
-    if (!key) {
-        alert("Dán key vào ô trước");
-        return;
-    }
-
-    const regex = /^TManhios\-(12hour|1hour|1day|7day|1month|forever)\-[A-Z0-9]{4,64}$/;
-    if (!regex.test(key)) {
-        alert("Key sai định dạng");
-        return;
-    }
-
-    // Chú thích: xóa hướng dẫn, hiển thị key
-    $result.value = key;
-
-    totalCount = 1;
-    $count.textContent = totalCount;
-
-    $pasteKey.value = "";
-});
-
-// ============================================================
-// Chú thích: nút COPY
+// Chú thích: NÚT COPY
 // ============================================================
 $btnCopy.addEventListener("click", () => {
     if (!$result.value) return;
@@ -160,7 +142,7 @@ $btnCopy.addEventListener("click", () => {
 });
 
 // ============================================================
-// Chú thích: nút XÓA
+// Chú thích: NÚT XÓA
 // ============================================================
 $btnClear.addEventListener("click", () => {
     $result.value = "";
@@ -169,7 +151,7 @@ $btnClear.addEventListener("click", () => {
 });
 
 // ============================================================
-// Chú thích: nút KIỂM TRA KEY
+// Chú thích: KIỂM TRA KEY
 // ============================================================
 $btnCheck.addEventListener("click", async () => {
     const key = $checkKey.value.trim();
@@ -179,7 +161,8 @@ $btnCheck.addEventListener("click", async () => {
         return;
     }
 
-    const regex = /^TManhios\-(12hour|1hour|1day|7day|1month|forever)\-[A-Z0-9]{4,64}$/;
+    // Chú thích: regex chấp nhận 6hour
+    const regex = /^TManhios\-(6hour|12hour|1hour|1day|7day|1month|forever)\-[A-Z0-9]{4,64}$/;
     if (!regex.test(key)) {
         $checkResult.innerHTML = '<p class="err">✗ Sai định dạng key</p>';
         return;
@@ -225,7 +208,7 @@ $btnCheck.addEventListener("click", async () => {
 });
 
 // ============================================================
-// Chú thích: format thời gian
+// Chú thích: format thời gian còn lại
 // ============================================================
 function formatRemain(ms) {
     if (ms <= 0) return "HẾT HẠN";
@@ -239,7 +222,7 @@ function formatRemain(ms) {
 }
 
 // ============================================================
-// Chú thích: chấm đỏ
+// Chú thích: chấm đỏ khi click
 // ============================================================
 document.addEventListener("click", (e) => {
     const dot = document.createElement("div");
@@ -250,7 +233,4 @@ document.addEventListener("click", (e) => {
     setTimeout(() => dot.remove(), 3000);
 });
 
-// ============================================================
-// Chú thích: khởi động
-// ============================================================
 fetchIP();
